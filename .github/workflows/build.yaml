@@ -1,0 +1,47 @@
+name: Build, Modify, and Release
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch: # 允许手动触发
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Read and modify file
+        run: |
+          FILE_PATH="IPTV-Unicom.m3u"
+          SEARCH_STRING="http://192.168.123.1:23234"
+          REPLACE_STRING="http://tv.hr.hr:4022"
+          sed -i "s/${SEARCH_STRING}/${REPLACE_STRING}/g" $FILE_PATH
+
+      - name: Get the current date
+        id: get_date
+        run: echo "RELEASE_TAG=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          release_name: Release ${{ env.RELEASE_TAG }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Modified File to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: IPTV-Unicom.m3u
+          asset_name: IPTV-Unicom.m3u
+          asset_content_type: text/plain
