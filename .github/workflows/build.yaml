@@ -19,7 +19,7 @@ jobs:
           FILE_PATH="IPTV-Unicom.m3u"
           SEARCH_STRING="http://192.168.123.1:23234"
           REPLACE_STRING="http://tv.hr.hr:4022"
-          sed -i "s/${SEARCH_STRING}/${REPLACE_STRING}/g" $FILE_PATH
+          sed -i "s|${SEARCH_STRING}|${REPLACE_STRING}|g" $FILE_PATH
 
       - name: Get the current date
         id: get_date
