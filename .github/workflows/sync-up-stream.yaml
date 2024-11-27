@@ -22,7 +22,8 @@ jobs:
       - name: Fetch upstream
         run: git fetch upstream
       - name: Merge upstream changes
-        run: git merge upstream/master --allow-unrelated-histories || true
+        #run: git merge upstream/master --allow-unrelated-histories || true
+        run: git rebase upstream/master || git rebase --abort
       - name: Check for changes
         id: check_changes
         run: |
